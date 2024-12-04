@@ -1,19 +1,13 @@
+from flask import Flask, request, jsonify
 import pandas as pd
 import requests
 from PIL import Image
 from io import BytesIO
 
-# Function to upload and process Excel file
-def process_excel(file_path):
-    df = pd.read_excel(file_path)
-    for index, row in df.iterrows():
-        record_id = row['RecordID']
-        bags_count = row['BagsCount']
-        if bags_count > threshold:  # Define your threshold for overload
-            fee = calculate_fee(bags_count)
-            print(f"Record ID: {record_id}, Overloaded Bags: {bags_count}, Fee Assigned: ${fee}")
-            # Here you could assign the fee to the specified account
-            # assign_fee_to_account(record_id, fee)
+app = Flask(__name__)
+
+# Define the overload threshold
+threshold = 5
 
 # Function to calculate fees based on overloaded bags
 def calculate_fee(bags_count):
@@ -24,19 +18,35 @@ def calculate_fee(bags_count):
 def analyze_images(image_url):
     response = requests.get(image_url)
     img = Image.open(BytesIO(response.content))
-    # Perform image processing to determine type of overload
-    # For example, using a pre-trained model to classify images
     img.show()  # This is just for demonstration
 
-# Main function to run the bot
-def main():
-    file_path = 'path_to_your_excel_file.xlsx'  # Replace with actual path
-    process_excel(file_path)
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
     
-    # Example image URL (replace with actual URL)
-    image_url = 'https://example.com/image.jpg'
-    analyze_images(image_url)
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    df = pd.read_excel(file)
+    results = []
+    
+    for index, row in df.iterrows():
+        record_id = row['RecordID']
+        bags_count = row['BagsCount']
+        
+        if bags_count > threshold:
+            fee = calculate_fee(bags_count)
+            results.append({
+                'RecordID': record_id,
+                'Overloaded Bags': bags_count,
+                'Fee Assigned': fee
+            })
+            # Here you could assign the fee to the specified account
+            # assign_fee_to_account(record_id, fee)
+
+    return jsonify(results)
 
 if __name__ == "__main__":
-    threshold = 5  # Define the overload threshold
-    main()
+    app.run(debug=True)
