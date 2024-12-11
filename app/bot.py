@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import pandas as pd
 import requests
 from PIL import Image
@@ -19,6 +19,10 @@ def analyze_images(image_url):
     response = requests.get(image_url)
     img = Image.open(BytesIO(response.content))
     img.show()  # This is just for demonstration
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -43,8 +47,6 @@ def upload_file():
                 'Overloaded Bags': bags_count,
                 'Fee Assigned': fee
             })
-            # Here you could assign the fee to the specified account
-            # assign_fee_to_account(record_id, fee)
 
     return jsonify(results)
 
