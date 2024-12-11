@@ -1,0 +1,5 @@
+Flask
+pandas
+requests
+Pillow
+# Add any ML libraries you need, e.g., TensorFlow, PyTorch
