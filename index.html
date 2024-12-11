@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garbage Cart Fee Assignment</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Garbage Cart Fee Assignment</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="file">Upload Excel File:</label><br>
+        <input type="file" id="file" name="file" accept=".xlsx" required><br>
+        <label for="overage">Overage Fee:</label><br>
+        <input type="number" id="overage" name="overage" placeholder="Enter fee per overage bag" required><br>
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
